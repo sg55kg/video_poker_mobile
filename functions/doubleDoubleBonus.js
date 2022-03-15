@@ -26,20 +26,11 @@ export class doubleDoubleBonus {
 
     draw(cardArr) {
         if(!cardArr) return 
-        if(cardArr[0] === -1) {
-            cardArr[0] = this.dealCard()
-        }
-        if(cardArr[1] === -1) {
-            cardArr[1] = this.dealCard()
-        }
-        if(cardArr[2] === -1) {
-            cardArr[2] = this.dealCard()
-        }
-        if(cardArr[3] === -1) {
-            cardArr[3] = this.dealCard()
-        }
-        if(cardArr[4] === -1) {
-            cardArr[4] = this.dealCard()
+        for(let i = 0; i < 5; i++) {
+            if(cardArr[i] === -1) {
+                // card at this index was not held by user, so replace with a new random card
+                cardArr[i] = this.dealCard()
+            }
         }
         return cardArr
     }
