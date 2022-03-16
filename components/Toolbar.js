@@ -23,7 +23,7 @@ const Toolbar = ({
         } else if(gameStarted && !cardsDrawn) {
             let drawnCards = game.draw(selectedCards)
             setCards(drawnCards)
-            let result = calcDDBWin(drawnCards)
+            let result = game.calcWin(drawnCards)
             setWinType(result)
             setCardsDrawn(true)
         } else if(gameStarted && cardsDrawn) {

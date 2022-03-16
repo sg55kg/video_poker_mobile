@@ -7,6 +7,7 @@ Currently I am focusing on only double double bonus poker, but I plan to expand 
 The goal by the end of this project is to release this app and make it available for others to play.
 
 # TO DOs
+0. FIX JACKS OR BETTER BUG
 1. Continue cleaning up/improving the winning hand algorithms
 2. Test for more edge cases with each hand
 3. Add a system for tracking fake money/changing bet amounts

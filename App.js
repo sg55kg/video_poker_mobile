@@ -22,7 +22,6 @@ export default function App() {
       let newGame = new doubleDoubleBonus()
       setGame(newGame)
       let newHand = newGame.dealHand()
-      console.log(newHand)
       setCards(newHand)
     }
   },[gameStarted])
