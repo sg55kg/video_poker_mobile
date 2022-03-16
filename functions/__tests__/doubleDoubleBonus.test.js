@@ -131,11 +131,45 @@ describe('Double double bonus poker class', () => {
         expect(result).toBe('FULL HOUSE')
     })
 
-    // passes, but needs to run through more edge cases
     it('should return TWO PAIR when given a pair of 2s and a pair of 5s', () => {
         const testGame = new doubleDoubleBonus()
         const hand = [1, 3, 41, 14, 15]
         const result = testGame.calcWin(hand)
         expect(result).toBe('TWO PAIR')
+    })
+
+    it('should return TWO PAIR when given two pairs of face cards', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [8, 38, 40, 42, 43]
+        const result = testGame.calcWin(hand)
+        expect(result).toBe('TWO PAIR')
+    })
+
+    it('should return FULL HOUSE when given triplet and pair', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [1, 3, 5, 6, 8]
+        const result = testGame.calcWin(hand)
+        expect(result).toBe('FULL HOUSE')
+    })
+
+    it('should return GAME OVER with single low pair', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [1, 3, 13, 27, 49]
+        const result = testGame.calcWin(hand)
+        expect(result).toBe('GAME OVER')
+    })
+
+    it('should return GAME OVER with no flush, pairs, etc', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [1, 6, 11, 28, 52]
+        const result = testGame.calcWin(hand)
+        expect(result).toBe('GAME OVER')
+    })
+
+    it('should return FLUSH without a straight flush', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [2, 10, 14, 22, 30]
+        const result = testGame.calcWin(hand)
+        expect(result).toBe('FLUSH')
     })
 })

@@ -38,39 +38,36 @@ export class doubleDoubleBonus {
     calcWin(cards) {
         let cardsArr = [...cards]
         cardsArr = cardsArr.sort((a,b) => a - b)
-        console.log(cardsArr + 'sorted')
         let win = ''
     
         if(checkRoyalFlush(cardsArr)) {
             return win = 'ROYAL FLUSH'
         } 
         
-        if(checkStraightEdit(cardsArr)) { // 
-            if(checkFlush(cardsArr, 0, cardsArr.length - 1, cardsArr.length)) {
-                return win = 'STRAIGHT FLUSH'
-            } else {
-                return win = 'STRAIGHT'
-            }
+        if(checkStraightFlush(cardsArr)) { // 
+            return win = 'STRAIGHT FLUSH'
         } 
+
+        if(checkStraight(cardsArr)) {
+            return win === 'STRAIGHT'
+        }
         
-        if(checkFlush(cardsArr, 0, 4)) { // is also checking for straight, should only be numbers seperated by 4
+        if(checkFlush(cardsArr)) {
             return win = 'FLUSH'
         }
 
-        if(checkStraight(cardsArr, 0, 4, 3)) {
-            if(cardsArr[1] >= 49) {
+        if(checkPairs(cardsArr, 0, 4, 3)) {
+            if(checkTriplets(cardsArr)) {
+                return win = 'FULL HOUSE'
+            } else if(cardsArr[1] >= 49) {
                 if(cardsArr[0] <= 12) {
                     return win = 'FOUR ACES + 2 THRU 4'
-                } else if(cardsArr[3] < 49) {
-                    return win = 'FULL HOUSE'
-                } else {
+                 } else {
                     return win = 'FOUR ACES + 5 THRU K'
                 }
             } else if(cardsArr[0] >= 1 && cardsArr[0] <= 12) {
                 if((cardsArr[4] <= 12) || (cardsArr[4] >= 49)) {
                     return win = 'FOUR 2 THRU 4 + A THRU 4'
-                } else if (cardsArr[3] > 12) {
-                    return win = 'FULL HOUSE'
                 } else {
                     return win = 'FOUR 2 THRU 4 + 5 THRU K'
                 }
@@ -79,26 +76,11 @@ export class doubleDoubleBonus {
             }
         }
 
-        if(checkStraight(cardsArr, 0, 4, 2)) { //two pair gets caught here and made 3. Maybe add nested check
-            if(checkStraight(cardsArr, 0, 2, 1) && (checkStraight(cardsArr, 1, 4, 1))) {
+        if(checkPairs(cardsArr, 0, 4, 2)) {
+            if(!checkTriplets(cardsArr)) {
                 return win = 'TWO PAIR' 
             }
             return win = 'THREE OF A KIND'
-        }
-        
-        if(checkStraight(cardsArr, 0, 3, 2)) {
-            if(checkStraight(cardsArr, 3, 4, 1)) {
-                return win = 'FULL HOUSE'
-            } else {
-                return win = 'THREE OF A KIND'
-            }
-        }
-        if(checkStraight(cardsArr, 2, 4, 2)) {
-            if(checkStraight(cardsArr, 0, 2, 1)) {
-                return win = 'FULL HOUSE'
-            } else {
-                return win = 'THREE OF A KIND'
-            }
         }
         
         if(checkJacksOrBetter(cardsArr)) {
@@ -135,27 +117,8 @@ export class doubleDoubleBonus {
 // const FOUR_KINGS = [45, 46, 47, 48]
 
 
-const checkStraight = (cards, start, end, numOfPairs) => {
-    let count = 0
-    // check if there are consecutive numbers in the player's hand to narrow down 3/4 of a kind/straight/full house
-    for(let i = start; i < end; i++) {
-        for(let j = 1; j <= 52; j += 4) {
-            if((cards[i] >= j && cards[i] <= j + 3) && (cards[i+1] >= j && cards[i+1] <= j + 3)) {
-                count++
-                console.log(cards[i] + " " + cards[i+1] + " " + count)
-                break
-            }
-        }
-    }
-    console.log(count)
-    if(count === numOfPairs) { 
-        return true 
-    } else { 
-        return false 
-    }
-}
 
-const checkStraightEdit = (cards) => {
+const checkStraight = (cards) => {
     let count = 0
     for(let i = 0; i < cards.length - 1; i++) {
         for(let j = 1; j <= 52; j += 4) {
@@ -164,18 +127,33 @@ const checkStraightEdit = (cards) => {
             }
         }
     }
-    console.log("cards: " + cards + " " + count)
     return count === 4
 }
 
-const checkFlush = (cards, start, end) => {
+const checkStraightFlush = (cards, start, end) => {
     let count = 0
-    for(let i = start; i < end; i++) {
-        if(cards[i] === (cards[i+1] - 4) || !(cards[i+1] - cards[i] > 3)) {
+    for(let i = 0; i < cards.length - 1; i++) {
+        if(cards[i] === (cards[i+1] - 4)) {
             count++
+        } else {
+            return false
         }
     }
     return count === 4
+}
+
+const checkFlush = (cards) => {
+    let flushCount = 1
+    for(let i = cards[0] + 4; i <= 52; i += 4) {
+        if(cards[flushCount] === i) {
+            flushCount++
+            if(flushCount === 5) { return true }
+        } else if(cards[flushCount] < i) {
+            return false
+        }
+    }
+    return false
+    
 }
 
 const checkRoyalFlush = (cards) => {
@@ -192,38 +170,60 @@ const checkRoyalFlush = (cards) => {
 }
 
 const checkJacksOrBetter = (cards) => {
-    console.log('check jacks')
     // const jacksStartEnd = [37, 40]
     // const queensStartEnd = [41, 44]
     // const kingsStartEnd = [45, 48]
     // const acesStartEnd = [49, 52]
     if((cards[0] >= 37 && cards[1] >= 37) && (cards[1] - cards[0] < 4)) {
-        console.log('first ' + (cards[1] - cards[0]))
         return true
     } else if((cards[1] >= 37 && cards[2] >= 37) && (cards[2] - cards[1] < 4)){
-        console.log('sec ' + (cards[2] - cards[1]))
         return true
     } else if((cards[2] >= 37 && cards[3] >= 37) && (cards[3] - cards[2] < 4)) {
-        console.log('thir ' + (cards[3] - cards[2]))
         return true
     } else if((cards[3] >= 37 && cards[4] >= 37) && (cards[4] - cards[3] < 4)) {
-        console.log('four ' + (cards[4] - cards[3]))
         return true
     } else {
         return false
     }
 }
 
-const checkSameNum = (cards) => {
+const checkPairs = (cards, start, end, numOfPairs) => {
+    let count = 0
     for(let i = start; i < end; i++) {
         for(let j = 1; j <= 52; j += 4) {
             if((cards[i] >= j && cards[i] <= j + 3) && (cards[i+1] >= j && cards[i+1] <= j + 3)) {
                 count++
-                console.log(cards[i] + " " + cards[i+1] + " " + count)
                 break
             }
         }
     }
+    return count === numOfPairs
+}
+
+const checkTriplets = (cards) => {
+    let count = 0
+    for(let i = 1; i <= 52; i += 4) {
+        if(cards[0] >= i && cards[0] <= i + 3) {
+            if((cards[1] >= i && cards[1] <= i + 3) && (cards[2] >= i && cards[2] <= i + 3)) {
+                count++
+                
+            }
+        } 
+        if (cards[1] >= i && cards[1] <= i + 3) {
+            if((cards[2] >= i && cards[2] <= i + 3) && (cards[3] >= i && cards[3] <= i + 3)) {
+                count++
+                if(count === 2) {
+                    return false
+                }
+            }
+        }
+        if (cards[2] >= i && cards[2] <= i + 3) {
+            if((cards[3] >= i && cards[3] <= i + 3) && (cards[4] >= i && cards[4] <= i + 3)) {
+                count++
+            }
+        }
+    }
+    return count === 1
 }
 
 
