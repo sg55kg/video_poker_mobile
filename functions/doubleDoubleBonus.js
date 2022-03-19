@@ -1,12 +1,9 @@
 export class doubleDoubleBonus {
-    constructor() {
+    constructor(cash, bet) {
         this.deck = [...Array(52).keys()]
-        //console.log(this.deck)
+        this.cash = cash
+        this.bet = bet
     }
-
-    // get deck() {
-    //     return this.deck
-    // }
 
     dealCard() {
         const card = this.deck[Math.floor(Math.random() * (this.deck.length - 1) + 1)]
@@ -49,7 +46,7 @@ export class doubleDoubleBonus {
         } 
 
         if(checkStraight(cardsArr)) {
-            return win === 'STRAIGHT'
+            return win = 'STRAIGHT'
         }
         
         if(checkFlush(cardsArr)) {
@@ -89,33 +86,57 @@ export class doubleDoubleBonus {
     
         return win = 'GAME OVER'
     }
+
+    updateCash(winType) {
+        if(winType === 'GAME OVER') { return 0 }
+        switch (winType) {
+            case 'JACKS OR BETTER':
+                return this.bet
+                break
+            case 'TWO PAIR':
+                return this.bet
+                break
+            case 'THREE OF A KIND':
+                return (this.bet * 3)
+                break
+            case 'STRAIGHT':
+                return (this.bet * 4)
+                break
+            case 'FLUSH':
+                return (this.bet * 5)
+                break
+            case 'FULL HOUSE':
+                return (this.bet * 9)
+                break
+            case 'FOUR 5 THRU K':
+                return (this.bet * 50)
+                break
+            case 'FOUR 2 THRU 4 + 5 THRU K':
+                return (this.bet * 80)
+                break
+            case 'FOUR ACES + 5 THRU K':
+                return (this.bet * 160)
+                break
+            case 'FOUR 2 THRU 4 + A THRU 4':
+                return (this.bet * 160)
+                break
+            case 'FOUR ACES + 2 THRU 4':
+                return (this.bet * 400)
+                break
+            case 'STRAIGHT FLUSH':
+                return (this.bet * 55)
+                break
+            case 'ROYAL FLUSH':
+                if(this.bet < 5) {
+                    return (this.bet * 250)
+                } else {
+                    return (this.bet * 800)
+                }
+                break
+        }
+    }
     
 }
-
-// const ROYAL_FLUSH_CLUBS = [33, 37, 41, 45, 49]
-// const ROYAL_FLUSH_DIAMONDS = [34, 38, 42, 46, 50]
-// const ROYAL_FLUSH_HEARTS = [35, 39, 43, 47, 51]
-// const ROYAL_FLUSH_SPADES = [36, 40, 44, 48, 52]
-
-// const STRAIGHT_FLUSH_CLUBS = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49]
-// const STRAIGHT_FLUSH_DIAMONDS = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50]
-// const STRAIGHT_FLUSH_HEARTS = [3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51]
-// const STRAIGHT_FLUSH_SPADES = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52]
-
-// const FOUR_ACES = [49, 50, 51, 52]
-// const FOUR_TWOS = [1, 2, 3, 4]
-// const FOUR_THREES = [5, 6, 7, 8]
-// const FOUR_FOURS = [9, 10, 11, 12]
-// const FOUR_FIVES = [13, 14, 15, 16]
-// const FOUR_SIXES = [17, 18, 19, 20]
-// const FOUR_SEVENS = [21, 22, 23, 24]
-// const FOUR_EIGHTS = [25, 26, 27, 28]
-// const FOUR_NINES = [29, 30, 31, 32]
-// const FOUR_TENS = [33, 34, 35, 36]
-// const FOUR_JACKS = [37, 38, 39, 40]
-// const FOUR_QUEENS = [41, 42, 43, 44]
-// const FOUR_KINGS = [45, 46, 47, 48]
-
 
 
 const checkStraight = (cards) => {
@@ -174,16 +195,14 @@ const checkJacksOrBetter = (cards) => {
     // const queensStartEnd = [41, 44]
     // const kingsStartEnd = [45, 48]
     // const acesStartEnd = [49, 52]
-    if((cards[0] >= 37 && cards[1] >= 37) && (cards[1] - cards[0] < 4)) {
-        return true
-    } else if((cards[1] >= 37 && cards[2] >= 37) && (cards[2] - cards[1] < 4)){
-        return true
-    } else if((cards[2] >= 37 && cards[3] >= 37) && (cards[3] - cards[2] < 4)) {
-        return true
-    } else if((cards[3] >= 37 && cards[4] >= 37) && (cards[4] - cards[3] < 4)) {
-        return true
-    } else {
-        return false
+    for(let start = 37; start < 52; start += 4) {
+        let end = start + 3
+        for(let firstCard = 0; firstCard < 4; firstCard++) {
+            let secondCard = firstCard + 1
+            if((cards[firstCard] >= start && cards[secondCard] >= start) && (cards[firstCard] <= end && cards[secondCard] <= end)){
+                return true
+            }
+        }
     }
 }
 

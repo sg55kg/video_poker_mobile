@@ -49,6 +49,13 @@ describe('Double double bonus poker class', () => {
         expect(result).toBe('JACKS OR BETTER')
     })
 
+    it('should not return JACKS OR BETTER when given a queen and jack close in number', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [11, 21, 40, 41, 52]
+        const result = testGame.calcWin(hand)
+        expect(result).not.toBe('JACKS OR BETTER')
+    })
+
     it('should return THREE OF A KIND when given three consecutive number two cards', () => {
         const testGame = new doubleDoubleBonus()
         const hand = [1, 2, 3, 18, 41]
@@ -171,5 +178,19 @@ describe('Double double bonus poker class', () => {
         const hand = [2, 10, 14, 22, 30]
         const result = testGame.calcWin(hand)
         expect(result).toBe('FLUSH')
+    })
+
+    it('should return JACKS OR BETTER with 2 face cards far apart', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [44, 26, 40, 15, 41]
+        const result = testGame.calcWin(hand)
+        expect(result).toBe('JACKS OR BETTER')
+    })
+
+    it('should return JACKS OR BETTER with 2 kings', () => {
+        const testGame = new doubleDoubleBonus()
+        const hand = [39, 47, 2, 44, 46]
+        const result = testGame.calcWin(hand)
+        expect(result).toBe('JACKS OR BETTER')
     })
 })

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { StyleSheet, Pressable, Image, TouchableHighlight, Text, View } from 'react-native'
-import{ doubleDoubleBonus, calcDDBWin } from '../functions/doubleDoubleBonus'
+import{ doubleDoubleBonus } from '../functions/doubleDoubleBonus'
 
 const Toolbar = ({ 
     betAmount,
@@ -14,22 +14,37 @@ const Toolbar = ({
     setCards, 
     setSelectedCards, 
     selectedCards,
-    setWinType
+    setWinType,
+    denomination,
+    setDenomination,
+    wallet,
+    handleChangeWallet,
+    showDenomModal,
+    setShowDenomModal
 }) => {
 
     const handleDealDraw = () => {
         if(!gameStarted) {
             setGameStarted(true)
+            let bet = denomination * betAmount
+            let updatedCash = wallet - bet
+            handleChangeWallet(updatedCash)
         } else if(gameStarted && !cardsDrawn) {
             let drawnCards = game.draw(selectedCards)
             setCards(drawnCards)
             let result = game.calcWin(drawnCards)
+            let amount = game.updateCash(result)
+            console.log(amount)
+            let updatedCash = wallet + amount
+            handleChangeWallet(updatedCash)
             setWinType(result)
             setCardsDrawn(true)
         } else if(gameStarted && cardsDrawn) {
             setWinType(null)
             setSelectedCards([-1,-1,-1,-1,-1])
-            let newGame = new doubleDoubleBonus()
+            let newGame = new doubleDoubleBonus(wallet, (denomination * betAmount))
+            let updatedCash = wallet - (denomination * betAmount)
+            handleChangeWallet(updatedCash)
             setGame(newGame)
             let newCards = newGame.dealHand()
             setCards(newCards)
@@ -64,7 +79,7 @@ const Toolbar = ({
                 <Pressable onPress={handleIncreaseBet} style={toolbarStyles.smallBetBtn}>
                     <Text style={toolbarStyles.smallBetBtnText}>BET 1</Text>
                 </Pressable>
-                <Pressable style={toolbarStyles.betBtn}>
+                <Pressable style={toolbarStyles.betBtn} onPress={() => setShowDenomModal(!showDenomModal)}>
                     <Text style={toolbarStyles.betBtnText}>5¢</Text>
                 </Pressable>
                 <Pressable onPress={handleMaxBet} style={toolbarStyles.smallBetBtn}>
@@ -86,7 +101,7 @@ const toolbarStyles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         justifyContent: 'space-between',
-        backgroundColor: 'rgb(2, 18, 238)',
+        backgroundColor: 'rgb(2, 15, 202)',
         flexDirection: 'row',
         paddingBottom: 20,
         paddingLeft: 10,

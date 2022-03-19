@@ -1,11 +1,49 @@
-import { useState, useEffect } from 'react'
-import { StyleSheet, Pressable, Image, TouchableHighlight, Text, View } from 'react-native'
+import { useState, useEffect, useRef } from 'react'
+import { StyleSheet, Pressable, Image, TouchableHighlight, Text, View, Animated } from 'react-native'
 import  { getCardImage } from '../functions/getCardImage'
 
 const Card = ({ index, number, gameStarted, selectedCards, setSelectedCards, cardsDrawn }) => {
     const [isSelected, setIsSelected] = useState(false)
-
     const [imageFile, setImageFile] = useState(null)
+
+    const flipAnimation = useRef(new Animated.Value(0)).current
+    let flipRotation = 0
+
+    //flipAnimation.addListener(({ value }) => flipRotation = value)
+
+    const flipToFrontStyle = {
+        transform: [{ 
+            rotateY: flipAnimation.interpolate({
+                inputRange: [ 0, 180 ],
+                outputRange: [ "0deg", "180deg" ]
+            }) 
+        }]
+    }
+
+    const flipToBackStyle = {
+        transform: [{ 
+            rotateY: flipAnimation.interpolate({
+                inputRange: [ 0, 180 ],
+                outputRange: [ "180deg", "360deg" ]
+            })
+        }]
+    }
+
+    const flipToFront = () => {
+        Animated.timing(flipAnimation, {
+            toValue: 180,
+            duration: 100,
+            useNativeDriver: true,
+        }).start()
+    }
+
+    const flipToBack = () => {
+        Animated.timing(flipAnimation, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: true,
+        }).start()
+    }
 
     const handleSelect = () => {
         if(gameStarted && !cardsDrawn) {
@@ -27,6 +65,8 @@ const Card = ({ index, number, gameStarted, selectedCards, setSelectedCards, car
         if(number) {
             let file = getCardImage(number)
             setImageFile(file)
+            setTimeout(() => flipToFront(), 105)
+            flipToBack()
         }
     },[number])
 
@@ -39,11 +79,9 @@ const Card = ({ index, number, gameStarted, selectedCards, setSelectedCards, car
     return (
         <View>
         {isSelected ? <Text style={cardStyle.text}>HELD</Text> : <Text> </Text>}
-        <Pressable onPress={handleSelect} style={cardStyle.card}>
-            {gameStarted ? 
-                <Image style={cardStyle.image} source={imageFile} /> : 
-                <Image style={cardStyle.image} source={require('../assets/card_back.png')} />
-            }
+        <Pressable onPress={handleSelect} style={cardStyle.card}>   
+            <Animated.Image style={{ ...cardStyle.image, ...flipToBackStyle }} source={imageFile} /> 
+            <Animated.Image style={{ ...cardStyle.imageBack, ...flipToFrontStyle }} source={require('../assets/card_back.png')} />   
         </Pressable>
         </View> 
     )
@@ -56,7 +94,8 @@ export const cardStyle = StyleSheet.create({
         justifyContent: 'center'
     },
     card: {
-        backgroundColor: 'white',
+        //backgroundColor: 'white',
+       // backgroundImage: 'url(../assets/card_back.png)',
         color: 'black',
         height: 115,
         width: 80,
@@ -68,7 +107,12 @@ export const cardStyle = StyleSheet.create({
     image: {
         height: '100%',
         width: '100%',
-
+        position: 'absolute',
+    },
+    imageBack: {
+        height: '100%',
+        width: '100%',   
+        backfaceVisibility: 'hidden'
     },
     text: {
         color: 'white',
