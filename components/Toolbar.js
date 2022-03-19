@@ -20,10 +20,12 @@ const Toolbar = ({
     wallet,
     handleChangeWallet,
     showDenomModal,
-    setShowDenomModal
+    setShowDenomModal,
+    btnsDisabled
 }) => {
 
     const handleDealDraw = () => {
+        if(btnsDisabled) { return }
         if(!gameStarted) {
             setGameStarted(true)
             let bet = denomination * betAmount
@@ -71,7 +73,7 @@ const Toolbar = ({
 
 
     return (
-        <View style={toolbarStyles.container}>
+        <View opacity={!btnsDisabled ? 1 : .7}  style={toolbarStyles.container}>
             <Pressable style={toolbarStyles.dealBtn}>
                 <Text style={toolbarStyles.dealBtnText}>Menu</Text>
             </Pressable>
@@ -86,7 +88,7 @@ const Toolbar = ({
                     <Text style={toolbarStyles.smallBetBtnText}>BET 5</Text>
                 </Pressable>
             </View>
-            <Pressable disabled={!betAmount} onPress={handleDealDraw} style={toolbarStyles.dealBtn}>
+            <Pressable disabled={!betAmount} onPress={ handleDealDraw} style={toolbarStyles.dealBtn}>
                 <Text style={toolbarStyles.dealBtnText}>{!gameStarted || cardsDrawn ? 'DEAL' : 'DRAW'}</Text>
             </Pressable>
         </View>

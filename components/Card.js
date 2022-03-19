@@ -7,9 +7,7 @@ const Card = ({ index, number, gameStarted, selectedCards, setSelectedCards, car
     const [imageFile, setImageFile] = useState(null)
 
     const flipAnimation = useRef(new Animated.Value(0)).current
-    let flipRotation = 0
 
-    //flipAnimation.addListener(({ value }) => flipRotation = value)
 
     const flipToFrontStyle = {
         transform: [{ 
@@ -74,11 +72,15 @@ const Card = ({ index, number, gameStarted, selectedCards, setSelectedCards, car
         if(!selectedCards.includes(number)) {
             setIsSelected(false)
         }
+        if(!cardsDrawn) {
+            setTimeout(() => flipToFront(), 105)
+            flipToBack()
+        }
     },[cardsDrawn])
 
     return (
         <View>
-        {isSelected ? <Text style={cardStyle.text}>HELD</Text> : <Text> </Text>}
+        {isSelected ? <Text style={cardStyle.text}>HELD</Text> : <Text style={ cardStyle.text}> </Text>}
         <Pressable onPress={handleSelect} style={cardStyle.card}>   
             <Animated.Image style={{ ...cardStyle.image, ...flipToBackStyle }} source={imageFile} /> 
             <Animated.Image style={{ ...cardStyle.imageBack, ...flipToFrontStyle }} source={require('../assets/card_back.png')} />   
@@ -91,14 +93,15 @@ export default Card
 
 export const cardStyle = StyleSheet.create({
     container: {
-        justifyContent: 'center'
+        justifyContent: 'flex-end',
+        alignItems: 'flex-start'
     },
     card: {
         //backgroundColor: 'white',
        // backgroundImage: 'url(../assets/card_back.png)',
         color: 'black',
-        height: 115,
-        width: 80,
+        height: 120,
+        width: 85,
         borderRadius: 5,
         margin: 5,
         borderWidth: 3,
@@ -117,7 +120,8 @@ export const cardStyle = StyleSheet.create({
     text: {
         color: 'white',
         fontSize: 14,
-        alignSelf:'center',
-        fontWeight: '600'
+        textAlign:'center',
+        fontWeight: '600',
+        marginBottom: -5
     }
 })

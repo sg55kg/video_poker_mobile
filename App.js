@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { doubleDoubleBonus } from './functions/doubleDoubleBonus'
 import { useWallet } from './hooks/useWallet'
+//import Sound from 'react-native-sound'
+import clink from './assets/sounds/mixkit-clinking-coins-1993.wav'
 
 import Cards from './components/Cards'
 import Table from './components/Table'
@@ -20,15 +22,28 @@ export default function App() {
   const [winType, setWinType] = useState(null)
   const [denomination, setDenomination] = useState(0.25)
   
-  const { wallet, handleChangeWallet } = useWallet()
+  const { wallet, handleChangeWallet, btnsDisabled } = useWallet()
   const [showDenomModal, setShowDenomModal] = useState(false)
+
+
+  //Sound.setCategory('Playback')
+
+  // const coinsSound = new Sound(require('./assets/sounds/mixkit-clinking-coins-1993.wav'), error => {
+  //   if(error) {
+  //     console.log(error)
+  //   }
+  //   coinsSound.play()
+  //   console.log('success')
+  // })
 
   useEffect(() => {
     if(gameStarted) {
+      //coinsSound.setVolume(.9)
       let newGame = new doubleDoubleBonus(wallet, (denomination * betAmount))
       setGame(newGame)
       let newHand = newGame.dealHand()
       setCards(newHand)
+      //return () => { coinsSound.play() }
     }
   },[gameStarted])
 
@@ -39,16 +54,16 @@ export default function App() {
       {showDenomModal && <DenomModal showDenomModal={showDenomModal} setShowDenomModal={setShowDenomModal} />}
         <Table betAmount={betAmount} /> 
         <View style={styles.results}>
-          <View style={{ flex: .7 }}>
+          <View style={{ width: '25%' }}>
             <Text style={styles.gameType}>{'Double Double Bonus Poker'}</Text>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.result}>{winType ? winType : ''}</Text>
+          <View style={{ width: '50%' }}>
+            <Text style={styles.result}>{winType ? winType : ' '}</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', flex: 3 }}>
-          <View style={{ flex: .6, justifyContent: 'flex-end', alignItems: 'center' }}>
-            <Text style={{...styles.wallet, fontSize: 22, fontWeight: '800'}}>{`$${wallet.toFixed(2)}`}</Text>
+          <View style={{ flex: .8, justifyContent: 'flex-end', alignItems: 'start' }}>
+            <Text style={{...styles.wallet, fontSize: 22, fontWeight: '800', marginLeft: 10}}>{`$${wallet.toFixed(2)}`}</Text>
           </View>
           <Cards 
             cards={cards} 
@@ -58,8 +73,8 @@ export default function App() {
             cardsDrawn={cardsDrawn}
             wallet={wallet}
           />
-          <View style={{ flex: .6, justifyContent: 'flex-end', alignItems: 'center' }}>
-            <Text style={styles.wallet}>{`CREDIT ${wallet.toFixed(2) * 100}`}</Text>
+          <View style={{ flex: .8, justifyContent: 'flex-end', alignItems: 'center' }}>
+            <Text style={styles.credit}>{`CREDIT ${(wallet.toFixed(2) * 10 * 100) / 10}`}</Text>
           </View>
         </View>
         <Toolbar 
@@ -77,10 +92,11 @@ export default function App() {
           setWinType={setWinType}
           denomination={denomination}
           setDenomination={setDenomination}
-          wallet={wallet}
+          wallet={wallet} 
           handleChangeWallet={handleChangeWallet}
           showDenomModal={showDenomModal}
           setShowDenomModal={setShowDenomModal}
+          btnsDisabled={btnsDisabled}
         />
         <StatusBar style="auto" /> 
       </View>
@@ -129,16 +145,22 @@ const styles = StyleSheet.create({
 
   },
   result: {
-    textAlign: 'left',
+    textAlign: 'center',
     textAlignVertical: 'center',
     color: 'white',
     fontWeight: '700',
-
+    fontSize: 17
   },
   wallet: {
     color: 'rgb(201, 204, 6)',
     fontWeight: '700',
     fontSize: 15,
+    padding: 5
+  },
+  credit: {
+    color: 'rgb(201, 204, 6)',
+    fontWeight: '700',
+    fontSize: 18,
     padding: 5
   }
 });

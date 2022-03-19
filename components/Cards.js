@@ -7,7 +7,7 @@ const Cards = ({ cards, gameStarted, selectedCards, setSelectedCards, cardsDrawn
 
     return (
         <View style={cardsStyle.container}>
-            {cards.length === 5 ? cards.map((card, index) => {
+            {cards[0] !== null ? cards.map((card, index) => {
                 return (
                     <Card 
                         key={index}

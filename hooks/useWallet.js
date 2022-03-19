@@ -6,15 +6,17 @@ export const useWallet = () => {
     const [wallet, setWallet] = useState(100.00)
     const newWallet = useRef(null)
     const [changed, setChanged] = useState(false)
-
+    const [btnsDisabled, setBtnsDisabled] = useState(false)
 
     const handleChangeWallet = (newAmount) => {
         if(wallet.current === newAmount) { 
             setChanged(false) 
             newWallet.current = null
+            setBtnsDisabled(false)
         } else { 
             newWallet.current = newAmount
             setChanged(true) 
+            setBtnsDisabled(true)
         }
     }
 
@@ -24,6 +26,7 @@ export const useWallet = () => {
         if(walletVal.toFixed(2) === newVal.toFixed(2) || !newWallet.current) {
             setChanged(false)
             newWallet.current = null
+            setBtnsDisabled(false)
         } else {
             if(walletVal > newVal) { 
                 walletRef.current -= .05
@@ -36,7 +39,7 @@ export const useWallet = () => {
         
     }, changed ? 10 : null)
 
-    return { wallet, handleChangeWallet }
+    return { wallet, handleChangeWallet, btnsDisabled }
     
 }
 
